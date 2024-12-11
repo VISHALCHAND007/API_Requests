@@ -1,23 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import type {PropsWithChildren} from 'react';
 import {
   FlatList,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
 
 function App(): React.JSX.Element {
   const [data, setData] = useState([]);
   const getComment = async () => {
-    const url = 'https://jsonplaceholder.typicode.com/posts';
+    const url = 'http://192.168.1.17:3000/users';
     const response = await fetch(url);
     let jsonResponse = await response.json();
-
+    
     setData(jsonResponse);
   };
 
@@ -27,15 +23,15 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.sectionTitle}>FlatList: Get Comments</Text>
+      <Text style={styles.sectionTitle}>FlatList: Get Users</Text>
       {data ? (
         <FlatList
           data={data}
           renderItem={({item}) => (
             <View style={styles.commentContainer}>
-              <Text style={styles.idText}>{item['id']}</Text>
-              <Text>Title: {item['title']}</Text>
-              <Text>Body: {item['body']}</Text>
+              <Text style={styles.idText}>{item['name']}</Text>
+              <Text>Age: {item['age']}</Text>
+              <Text>Email: {item['email']}</Text>
             </View>
           )}
         />
