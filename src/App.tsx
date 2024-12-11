@@ -56,8 +56,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   idText: {
+    color: '#ffffff',
     backgroundColor: 'orange', 
-    padding: 3
+    padding: 3, 
+    borderRadius: 4, 
+    marginBottom: 5
   },
   sectionTitle: {
     fontSize: 24,
