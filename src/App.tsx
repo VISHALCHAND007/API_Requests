@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  FlatList,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -26,70 +27,42 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-      <Text style={styles.sectionTitle}>List of Comments</Text>
-      {data.length
-        ? data.map((item) => (
-            <View key={item['id']} style={styles.commentContainer}>
-              <Text
-                style={[
-                  styles.underline,
-                  {backgroundColor: '#ddd', marginBottom: 5},
-                ]}>
-                Id:{' '}
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    fontSize: 15,
-                    textDecorationLine: 'none',
-                  }}>
-                  {item['id']}
-                </Text>
-              </Text>
-              <Text style={styles.underline}>
-                Title:{' '}
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    fontSize: 15,
-                    textDecorationLine: 'none',
-                  }}>
-                  {item['title']}
-                </Text>
-              </Text>
-              <Text style={styles.underline}>
-                Comment:{' '}
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    fontSize: 15,
-                    textDecorationLine: 'none',
-                  }}>
-                  {item['body']}
-                </Text>
-              </Text>
+      <Text style={styles.sectionTitle}>FlatList: Get Comments</Text>
+      {data ? (
+        <FlatList
+          data={data}
+          renderItem={({item}) => (
+            <View style={styles.commentContainer}>
+              <Text style={styles.idText}>{item['id']}</Text>
+              <Text>Title: {item['title']}</Text>
+              <Text>Body: {item['body']}</Text>
             </View>
-          ))
-        : null}
-      </ScrollView>
+          )}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 32,
+    flex: 1,
     paddingHorizontal: 24,
     backgroundColor: '#ffffff',
   },
   commentContainer: {
     padding: 10,
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
+    borderBottomColor: 'orange',
+    borderBottomWidth: 2,
+  },
+  idText: {
+    backgroundColor: 'orange', 
+    padding: 3
   },
   sectionTitle: {
     fontSize: 24,
     fontWeight: '600',
+    textDecorationLine: 'underline',
   },
   textWhite: {
     color: '#ffffff',
