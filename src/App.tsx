@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
+import Snackbar from 'react-native-snackbar';
 import {
+  Button,
   FlatList,
   SafeAreaView,
   StyleSheet,
@@ -7,18 +9,40 @@ import {
   View,
 } from 'react-native';
 
+const localHost = 'http://192.168.1.17:3000'
+
 function App(): React.JSX.Element {
   const [data, setData] = useState([]);
-  const getComment = async () => {
-    const url = 'http://192.168.1.17:3000/users';
+  const getUsers = async () => {
+    const url = `${localHost}/users`;
     const response = await fetch(url);
     let jsonResponse = await response.json();
-    
+
     setData(jsonResponse);
   };
 
+  const postUserData = async () => {
+      const user = {
+        name: 'Dheeraj Lohani', 
+        age: 24, 
+        email: 'dheeraj@gmail.com'
+      }
+      const url = `${localHost}/users`
+      let response = await fetch(url, {
+        method: 'POST', 
+        body: JSON.stringify(user), 
+        headers: {'Content-Type': 'application/json'}
+      })
+      response = await response.json()
+      Snackbar.show({
+        duration: Snackbar.LENGTH_LONG, 
+        text: 'Added successfully'
+      })
+      getUsers()
+  };
+
   useEffect(() => {
-    getComment();
+    getUsers();
   }, []);
 
   return (
@@ -36,6 +60,7 @@ function App(): React.JSX.Element {
           )}
         />
       ) : null}
+      <Button title="Testing post" onPress={postUserData} />
     </SafeAreaView>
   );
 }
@@ -43,6 +68,7 @@ function App(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 10,
     paddingHorizontal: 24,
     backgroundColor: '#ffffff',
   },
@@ -53,10 +79,10 @@ const styles = StyleSheet.create({
   },
   idText: {
     color: '#ffffff',
-    backgroundColor: 'orange', 
-    padding: 3, 
-    borderRadius: 4, 
-    marginBottom: 5
+    backgroundColor: 'orange',
+    padding: 3,
+    borderRadius: 4,
+    marginBottom: 5,
   },
   sectionTitle: {
     fontSize: 24,
