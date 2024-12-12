@@ -8,11 +8,22 @@ import {
   View,
 } from 'react-native';
 import Snackbar from 'react-native-snackbar';
+import CustomDialog from './components/CustomDialog';
+import {User} from './index';
 
 const localHost = 'http://192.168.1.17:3000';
 
 function App(): React.JSX.Element {
+  let user: User = {
+    id: '',
+    name: '',
+    age: 0,
+    email: '',
+  };
+  //states
   const [data, setData] = useState([]);
+  const [selectedUser, setSelectedUser] = useState<User>(user);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const getUsers = async () => {
     const url = `${localHost}/users`;
@@ -28,20 +39,29 @@ function App(): React.JSX.Element {
   }, []);
 
   const showSnackbar = (msg: string) => {
-    Snackbar.show({text: msg, duration: Snackbar.LENGTH_SHORT, textColor: '#fff'})
-  }
+    Snackbar.show({
+      text: msg,
+      duration: Snackbar.LENGTH_SHORT,
+      textColor: '#fff',
+    });
+  };
 
-  const deleteUser = async(userId: string) => {
-      const url = `${localHost}/users`
-      const response = await fetch(`${url}/${userId}`, {
-        method: 'DELETE', 
-        headers: {'Content-Type': 'application/json'}
-      })
-      const jsonResponse = await response.json()
-      if(jsonResponse) {
-        showSnackbar(`User deleted :${userId}`)
-        getUsers()
-      }
+  const deleteUser = async (userId: string) => {
+    const url = `${localHost}/users`;
+    const response = await fetch(`${url}/${userId}`, {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/json'},
+    });
+    const jsonResponse = await response.json();
+    if (jsonResponse) {
+      showSnackbar(`User deleted :${userId}`);
+      getUsers();
+    }
+  };
+
+  const updateUser = (item: User) => {
+    setShowModal(true);
+    setSelectedUser(item);
   };
 
   return (
@@ -55,13 +75,23 @@ function App(): React.JSX.Element {
               <Text>Age: {item['age']}</Text>
               <Text>Email: {item['email']}</Text>
               <View style={styles.rowContainer}>
-                <Button title="Update" />
-                <Button title="Delete" color="#E23D28" onPress={() => deleteUser(item['id'])}/>
+                <Button title="Update" onPress={() => updateUser(item)} />
+                <Button
+                  title="Delete"
+                  color="#E23D28"
+                  onPress={() => deleteUser(item['id'])}
+                />
               </View>
             </View>
           )}
         />
       ) : null}
+      <CustomDialog
+        visibility={showModal}
+        setShowModal={setShowModal}
+        selectedUser={selectedUser}
+        getUsers={getUsers}
+      />
     </SafeAreaView>
   );
 }
