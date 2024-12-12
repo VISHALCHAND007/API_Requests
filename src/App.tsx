@@ -69,6 +69,7 @@ function App(): React.JSX.Element {
   };
 
   const searchUser = async (text: string) => {
+    showSnackbar('Not supported by Json_server now!')
     setSearchValue(text)
     const url = `${localHost}/users?q=${text}`;
 
