@@ -6,10 +6,12 @@ import {
   StyleSheet,
   Text,
   View,
+  TextInput,
 } from 'react-native';
 import Snackbar from 'react-native-snackbar';
 import CustomDialog from './components/CustomDialog';
 import {User} from './index';
+import Icon from 'react-native-vector-icons/EvilIcons';
 
 const localHost = 'http://192.168.1.17:3000';
 
@@ -24,13 +26,15 @@ function App(): React.JSX.Element {
   const [data, setData] = useState([]);
   const [selectedUser, setSelectedUser] = useState<User>(user);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState<string>('');
 
   const getUsers = async () => {
     const url = `${localHost}/users`;
     const response = await fetch(url);
     let jsonResponse = await response.json();
     if (jsonResponse) {
-      setData(jsonResponse);
+      setData([]);
+      setData(jsonResponse)
     }
   };
 
@@ -64,8 +68,31 @@ function App(): React.JSX.Element {
     setSelectedUser(item);
   };
 
+  const searchUser = async (text: string) => {
+    setSearchValue(text)
+    const url = `${localHost}/users?q=${text}`;
+
+    const response = await fetch(url)
+    const jsonResponse = await response.json()
+    if(jsonResponse) {
+      console.log(jsonResponse);
+      setData(jsonResponse)
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      //search
+      <View style={styles.searchRow}>
+        <Icon name="search" size={30} color="grey" style={{marginBottom: 7}} />
+        <TextInput
+          value={searchValue}
+          placeholder="Search"
+          placeholderTextColor="grey"
+          style={{flex: 1}}
+          onChangeText={text => searchUser(text)}
+        />
+      </View>
       {data ? (
         <FlatList
           data={data}
@@ -110,10 +137,8 @@ const styles = StyleSheet.create({
   },
   inputText: {
     borderWidth: 1,
-    borderColor: 'lightblue',
+    borderColor: '#FFCC33',
     borderRadius: 4,
-    padding: 10,
-    marginVertical: 15,
   },
   nameContainer: {
     backgroundColor: 'orange',
@@ -129,10 +154,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   rowContainer: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     marginTop: 8,
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#FFCC33',
+    borderRadius: 4,
+    padding: 5,
   },
 });
 
