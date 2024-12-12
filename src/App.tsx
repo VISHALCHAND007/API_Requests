@@ -1,107 +1,45 @@
 import React, {useEffect, useState} from 'react';
-import Snackbar from 'react-native-snackbar';
 import {
   Button,
   FlatList,
-  KeyboardAvoidingView,
   SafeAreaView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 
 const localHost = 'http://192.168.1.17:3000';
 
 function App(): React.JSX.Element {
-  const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
   const [data, setData] = useState([]);
 
-  const getUserData = async () => {
+  const getUsers = async () => {
     const url = `${localHost}/users`;
-    let response = await fetch(url);
-    const jsonResp = await response.json();
-
-    setData(jsonResp);
-  };
-
-  useEffect(() => {
-    getUserData();
-  }, []);
-
-  const postUserData = async () => {
-    if (name.length && age.length && email.length) {
-      setError('');
-      const user = {
-        name: name,
-        age: age,
-        email: email,
-      };
-      const url = `${localHost}/users`;
-      let response = await fetch(url, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(user),
-      });
-      response = await response.json();
-      Snackbar.show({
-        textColor: '#ffffff',
-        duration: Snackbar.LENGTH_LONG,
-        text: 'Added successfully',
-      });
-      getUserData();
-    } else {
-      setError('All fields are required.');
-      Snackbar.show({
-        textColor: '#ffffff',
-        text: error,
-        duration: Snackbar.LENGTH_SHORT,
-      });
+    const response = await fetch(url);
+    let jsonResponse = await response.json();
+    if (jsonResponse) {
+      setData(jsonResponse);
     }
   };
 
+  useEffect(() => {
+    getUsers();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView>
-        <Text style={styles.sectionTitle}>FlatList: Post Users</Text>
-
-        <View>
-          <TextInput
-            placeholder="Enter name"
-            placeholderTextColor="grey"
-            value={name}
-            onChangeText={text => setName(text)}
-            style={styles.inputText}
-          />
-          <TextInput
-            placeholder="Enter age"
-            placeholderTextColor="grey"
-            value={age.toString()}
-            onChangeText={text => setAge(text)}
-            style={styles.inputText}
-          />
-          <TextInput
-            placeholder="Enter email"
-            placeholderTextColor="grey"
-            value={email}
-            onChangeText={text => setEmail(text)}
-            style={[styles.inputText, {marginBottom: 25}]}
-          />
-        </View>
-        <Button title="Add user" onPress={postUserData} />
-      </KeyboardAvoidingView>
-
       {data ? (
         <FlatList
-          data={[...data].reverse()}
+          data={data}
           renderItem={({item}) => (
             <View style={styles.viewContainer}>
-              <Text style={{backgroundColor: 'orange'}}>{item['name']}</Text>
-              <Text>{item['age']}</Text>
-              <Text>{item['email']}</Text>
+              <Text style={styles.nameContainer}>Name: {item['name']}</Text>
+              <Text>Age: {item['age']}</Text>
+              <Text>Email: {item['email']}</Text>
+              <View style={styles.rowContainer}>
+                <Button title="Update" />
+                <Button title="Delete" color="#E23D28" />
+              </View>
             </View>
           )}
         />
@@ -129,12 +67,24 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 15,
   },
+  nameContainer: {
+    backgroundColor: 'orange',
+    color: '#fff',
+    padding: 5,
+    borderRadius: 5,
+  },
   viewContainer: {
     margin: 10,
     padding: 10,
     borderWidth: 1,
     borderColor: 'grey',
     borderRadius: 8,
+  },
+  rowContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: 8,
   },
 });
 
