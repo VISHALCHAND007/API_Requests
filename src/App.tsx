@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import Snackbar from 'react-native-snackbar';
 
 const localHost = 'http://192.168.1.17:3000';
 
@@ -26,6 +27,23 @@ function App(): React.JSX.Element {
     getUsers();
   }, []);
 
+  const showSnackbar = (msg: string) => {
+    Snackbar.show({text: msg, duration: Snackbar.LENGTH_SHORT, textColor: '#fff'})
+  }
+
+  const deleteUser = async(userId: string) => {
+      const url = `${localHost}/users`
+      const response = await fetch(`${url}/${userId}`, {
+        method: 'DELETE', 
+        headers: {'Content-Type': 'application/json'}
+      })
+      const jsonResponse = await response.json()
+      if(jsonResponse) {
+        showSnackbar(`User deleted :${userId}`)
+        getUsers()
+      }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {data ? (
@@ -38,7 +56,7 @@ function App(): React.JSX.Element {
               <Text>Email: {item['email']}</Text>
               <View style={styles.rowContainer}>
                 <Button title="Update" />
-                <Button title="Delete" color="#E23D28" />
+                <Button title="Delete" color="#E23D28" onPress={() => deleteUser(item['id'])}/>
               </View>
             </View>
           )}
