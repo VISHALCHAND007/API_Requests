@@ -76,7 +76,7 @@ function App(): React.JSX.Element {
     const response = await fetch(url)
     const jsonResponse = await response.json()
     if(jsonResponse) {
-      console.log(jsonResponse);
+      // console.log(jsonResponse);
       setData(jsonResponse)
     }
   };
